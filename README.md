@@ -30,7 +30,7 @@ Go于2009年11月10日发布。不到24小时后，我们看到了[关于泛型]
 
 让我们说它是一个int slice。
 
-```
+```go
 func ReverseInts(s []int) {
     first := 0
     last := len(s)
@@ -44,7 +44,7 @@ func ReverseInts(s []int) {
 
 非常简单，但即使是一个简单的功能，你也想写一些测试用例。事实上，当我这样做时，我发现了一个错误。我相信很多读者已经发现了它。
 
-```
+```go
 func ReverseInts(s []int) {
     first := 0
     last := len(s) - 1
@@ -60,7 +60,7 @@ func ReverseInts(s []int) {
 
 现在让我们反转一段字符串。
 
-```
+```go
 func ReverseStrings(s []string) {
     first := 0
     last := len(s) - 1
@@ -191,7 +191,7 @@ Go有两种内置于该语言中的通用通用数据结构：切片和maps。�
 
 这是此设计中的通用反向函数。
 
-```
+```go
 func Reverse (type Element) (s []Element) {
     first := 0
     last := len(s) - 1
@@ -208,7 +208,7 @@ func Reverse (type Element) (s []Element) {
 
 要使用类型参数调用函数，在一般情况下，您传递一个类型参数，这与任何其他参数类似，只不过它是一个类型。
 
-```
+```go
 func ReverseAndPrint(s []int) {
     Reverse(int)(s)
     fmt.Println(s)
@@ -221,7 +221,7 @@ func ReverseAndPrint(s []int) {
 
 调用泛型函数就像调用任何其他函数一样。
 
-```
+```go
 func ReverseAndPrint(s []int) {
     Reverse(s)
     fmt.Println(s)
@@ -237,7 +237,7 @@ func ReverseAndPrint(s []int) {
 
 让我们快速浏览一下不同的功能。
 
-```
+```go
 func IndexByte (type T Sequence) (s T, b byte) int {
     for i := 0; i < len(s); i++ {
         if s[i] == b {
@@ -256,7 +256,7 @@ func IndexByte (type T Sequence) (s T, b byte) int {
 
 这是为此示例定义Sequence契约的方式。
 
-```
+```go
 contract Sequence(T) {
     T string, []byte
 }
@@ -271,7 +271,7 @@ contract Sequence(T) {
 
 这是另一个简单的例子，它使用String方法返回[]string所有元素的字符串表示形式s。
 
-```
+```go
 func ToStrings (type E Stringer) (s []E) []string {
     r := make([]string, len(s))
     for i, v := range s {
@@ -284,7 +284,7 @@ func ToStrings (type E Stringer) (s []E) []string {
 
 此函数要求元素类型实现该String 方法。字符串合约确保了这一点。
 
-```
+```go
 contract Stringer(T) {
     T String() string
 }
@@ -297,7 +297,7 @@ contract Stringer(T) {
 
 以下是具有多个类型参数的合约示例。
 
-```
+```go
 type Graph (type Node, Edge G) struct { ... }
 
 contract G(Node, Edge) {
@@ -326,7 +326,7 @@ func (g *Graph(Node, Edge)) ShortestPath(from, to Node) []Edge {
 
 虽然Min编写自己非常简单，但任何有用的泛型实现都应该让我们将它添加到标准库中。这就是我们的设计。
 
-```
+```go
 func Min (type T Ordered) (a, b T) T {
     if a < b {
         return a
@@ -337,7 +337,7 @@ func Min (type T Ordered) (a, b T) T {
 
 该Ordered合约上说T具有类型是有序类型，这意味着它支持像小于，大于，等运算。
 
-```
+```go
 contract Ordered(T) {
     T int, int8, int16, int32, int64,
         uint, uint8, uint16, uint32, uint64, uintptr,
@@ -353,7 +353,7 @@ contract Ordered(T) {
 
 实际上，这份合约可能会进入标准库。所以Min函数（可能也会在某个标准库中）看起来就像这样。这里我们只是提到包中定义的Ordered合约。
 
-```
+```go
 func Min (type T contracts.Ordered) (a, b T) T {
     if a < b {
         return a
@@ -366,7 +366,7 @@ func Min (type T contracts.Ordered) (a, b T) T {
 
 最后，让我们看一个简单的通用数据结构，一个二叉树。在此示例中，树具有比较功能，因此对元素类型没有要求。
 
-```
+```go
 type Tree (type E) struct {
     root    *node(E)
     compare func(E, E) int
@@ -379,14 +379,14 @@ type node (type E) struct {
 ```
 以下是如何创建新的二叉树。比较函数传递给New函数。
 
-```
+```go
 func New (type E) (cmp func(E, E) int) *Tree(E) {
     return &Tree(E){compare: cmp}
 }
 ```
 未导出的方法返回一个指向持有v的槽的指针，或指向树应该去的位置。
 
-```
+```go
 func (t *Tree(E)) find(v E) **node(E) {
     pn := &t.root
     for *pn != nil {
@@ -406,14 +406,14 @@ func (t *Tree(E)) find(v E) **node(E) {
 
 这是用于测试树是否包含值的代码。
 
-```
+```go
 func (t *Tree(E)) Contains(v E) bool {
     return *t.find(e) != nil
 }
 ```
 这是插入新值的代码。
 
-```
+```go
 func (t *Tree(E)) Insert(v E) bool {
     pn := t.find(v)
     if *pn != nil {
@@ -428,7 +428,7 @@ func (t *Tree(E)) Insert(v E) bool {
 
 使用树很简单。
 
-```
+```go
 var intTree = tree.New(func(a, b int) int { return a - b })
 
 func InsertAndCheck(v int) {
