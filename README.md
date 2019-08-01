@@ -1,5 +1,9 @@
 # Go：为何带来范型
 
+- 中文版 
+
+- [English version](README-en.md)
+
 ## 介绍
 
 [这是在Gophercon 2019上发表的演讲版本。视频链接可供使用。]
